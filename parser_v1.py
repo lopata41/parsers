@@ -70,7 +70,7 @@ def data_decompose():
 
 def data_new_oval_save():
     '''Функция записывает полученный файл в текущую директорию и затем открывает его'''
-    result = f'new_oval{time.strftime('%Y-%m-%d_%H%M%S')}.xml'
+    result = f"new_oval{time.strftime('%Y-%m-%d_%H%M%S')}.xml"
     with open(result, 'w', encoding='utf-8') as file:
         file.write(soup.prettify())
     print(f'Done! {result} is saved')
@@ -108,7 +108,7 @@ def url_status_check():
             get_bz2_archive(filename, response)
         else:
             return 'Oops, something going wrong...', \
-                'status code=', response.status_code
+                   'status code=', response.status_code
 
 
 def check_file():
