@@ -76,7 +76,7 @@ def data_new_oval_save():
     print(f'Done! {result} is saved')
     try:
         os.startfile(os.path.join(os.getcwd(), result))
-    except FileNotFoundError:
+    except AttributeError:
         print('So, linux doesnt support method for open this file, try win or just go to path manually')
 
 
