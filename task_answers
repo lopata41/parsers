@@ -1,0 +1,119 @@
+Задание 1.
+
+Структура OVAL файла представляет из себя набор следующих объектов с сохранением вложенности:
+generator - содержит информацию о создании непосредственно содержимого всего файла
+объект definitions - является контейнером для объектов definition, которые являются ключевой структурой OVAL документа,
+	объект definition - ключевой объект OVAL документа, представляет собой набор данных для идентификации уязвимости и критерии проверки, которые могут указывать на состояние системы путем использования проверок из логических операторов AND, OR
+		объект metadata - с каждым объектом definition связан объект metadata, который содержит описания проверяемых систем(CPE), идентификаторы уязвимостей(CVE, бюллетени вендоров, etc..), типы уязвимостей(CWE)
+		объект criteria - содержит набор тестов(условий), которые при проверке возвращают булево значение True/False, объединенных операторами AND и OR, для определения состояния системы
+tests - содержит в себе ссылки на объекты, и на состояние, в котором может находится объект
+objects - содержит в себе непосредственно пакет, который проверяется
+states - представляет из себя набор состояний(версий) расширений(пакетов), в котором может оказаться компонент системы
+
+
+Лишними(избыточными) условиями могут являться проверки ОС, так как даже если условие в этом случае будет True, уязвимый пакет не обязательно может быть установлен, в случае же
+если мы проверяем сразу уязвимый пакет и получаем True, мы сразу понимаем, что он уязвим, так как по версии пакета можно идентифицировать к какой ОС он принадлежит - эти условия обязательны
+
+упрощение данного формата на мой взгляд очень сомнительная идея, однако, гипотетически, можно добавить оптимизации, пожертвовав читаемостью:
+
+Объект object вставляем напрямую в объект test
+Объект state вставляем напрямую в объект test
+Объект test вставляем вместо объекта criterion в объекте Criteria
+При повторении объектов object, state или test, наследуем их напрямую из объекта Definition
+получаем будет иметь следующий вид(упрощенно):
+generator
+definitions
+	definition
+		criterian
+			test/ref: test(при повторении)
+				object/ref: object(при повторении)		
+					state/ref: state(при повторении)
+
+
+
+ссылка на код: https://github.com/lopata41/parsers/blob/master/parser_v1.py
+
+
+
+Задание 2.
+
+1.1.2 (L1) Ensure 'Maximum password age' is set to '365 or fewer 
+days, but not 0' (Automated) 
+Проверяем, что срок жизни пароля != 0, дабы убедиться, что пароль имеет срок жизни. Пароль нужно регулярно менять, чтобы снизить вероятность получения доступа неавторизованных пользователей к информации
+	cmd:
+		net accounts
+		net accounts /domain
+
+
+1.1.4 (L1) Ensure 'Minimum password length' is set to '14 or more
+character(s)' (Automated)
+Проверяем, что длина пароля больше хотя бы 14 символов. Важно, потому что уменьшает шанс быть взломанным через атаки по словарю и брутфорс.
+	cmd:
+		net accounts
+		net accounts /domain
+
+
+2.2.26 (L1) Ensure 'Load and unload device drivers' is set to 
+'Administrators' (Automated) 
+Проверяем, потому что драйвера выполняются под высокими привилегиями, выдача таких прав пользователю может повлечь за собой последствия в виде вредоносного ПО, так как пользователь может непреднамеренно его установить
+	cmd:
+		not found
+
+
+2.3.6.1 (L1) Ensure 'Domain member: Digitally encrypt or sign
+secure channel data (always)' is set to 'Enabled' (Automated)
+Проверяем, потому что для всей информации, которой обмениваются участники домена с домен контроллером, должен применяться контроль целостности и обеспечиваться полное шифрование данных.
+Важно включить, чтобы предотвратить создание канала, в котором DC не может подписать данные своим ключем. В противном случае возможны атаки типа MITM
+	cmd:
+		REG QUERY "HKLM\SYSTEM\CurrentControlSet\Services\Netlogon\Parameters" /v RequireSignOrSeal
+
+
+2.3.6.5 (L1) Ensure 'Domain member: Maximum machine account 
+password age' is set to '30 or fewer days, but not 0' (Automated)
+Проверяем, что срок жизни пароля != 0, дабы убедиться, что пароль имеет срок жизни. Нужно менять, чтобы снизить вероятность получения доступа неавторизованных пользователей к информации 
+	cmd:
+		REG QUERY "HKLM\System\CurrentControlSet\Services\Netlogon\Parameters" /v MaximumPasswordAge 
+
+
+2.3.8.1 (L1) Ensure 'Microsoft network client: Digitally sign 
+communications (always)' is set to 'Enabled' (Automated) 
+Проверяем, потому что трафик между SMB клиентом и сервером шифруется, так как SMB постоянно используется в корпоративных сетях. Трафик должен шифроваться, чтобы никто не мог перехватить SMB трафик
+cmd:
+	REG QUERY "HKLM\SYSTEM\CurrentControlSet\Services\LanmanWorkstation\Parameters" /v RequireSecuritySignature 
+	
+
+2.3.11.4 (L1) Ensure 'Network security: Configure encryption
+types allowed for Kerberos' is set to 'AES128_HMAC_SHA1,
+AES256_HMAC_SHA1, Future encryption types' (Automated)
+Проверяем, что керберос не использует устаревшие типы шифрование данных. Устаревшие шифры имеют под собой уязвимости.
+cmd:
+	REG QUERY "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System\Kerberos\Parameters" /v SupportedEncryptionTypes
+
+
+2.3.17.3 (L1) Ensure 'User Account Control: Behavior of the
+elevation prompt for standard users' is set to 'Automatically deny
+elevation requests' (Automated)
+Проверяем, что UAC настроен как минимум на promt for credentials. Таким образом минимизируем попадание на АРМ вредоносного ПО
+cmd:
+	REG QUERY "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" /v ConsentPromptBehaviorUser
+
+
+5.12 (L1) Ensure 'OpenSSH SSH Server (sshd)' is set to
+'Disabled' or 'Not Installed' (Automated)
+Проверяем, что на АРМ не используется openSSH сервер, так как это может привести к существенному увеличению поверхности атаки
+cmd:
+	REG QUERY "HKLM\SYSTEM\CurrentControlSet\Services\" /v sshd:Start 
+
+
+18.9.26.2 (L1) Ensure 'Configures LSASS to run as a protected
+process' is set to 'Enabled: Enabled with UEFI Lock' (Automated)
+LSASS может хранить в себе разные секреты, NT-хеши и билеты кербероса, по этому этот процесс нужно защищать
+cmd:
+	REG QUERY "HKLM\SYSTEM\CurrentControlSet\Control\Lsa" /v RunAsPPL
+
+
+18.9.13.1 (L1) Ensure 'Boot-Start Driver Initialization Policy' is set
+to 'Enabled: Good, unknown and bad but critical' (Automated)
+Политика проверяет драйвера на этапе загрузки системы и позволяет распознать потенциально опасные, неподписанные драйвера и предотвратить их запуск
+cmd:
+	REG QUERY "HKLM\SYSTEM\CurrentControlSet\Policies\EarlyLaunch" /v
