@@ -25,7 +25,7 @@ generator
 definitions
 	definition
 		criterian
-			test/ ref: test(при повторении)
+			test/ref: test(при повторении)
 				object/ref: object(при повторении)		
 					state/ref: state(при повторении)
 
