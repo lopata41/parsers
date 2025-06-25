@@ -7,7 +7,7 @@
 "pip3 install -r requirements.txt"
 
 Написано на Python 3.9,
-проверено на Win10 python 3.10, 3.13
+проверено на Win10 python 3.9, 3.10, 3.13
              KaliLinux python 3.12
 
 description
