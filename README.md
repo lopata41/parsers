@@ -1,8 +1,7 @@
-ответы на задание в task_answers
+ответы на задания в task_answers
 
 
-
-parser.py
+код для задания 1 - parser.py
 Перед запуском установите зависимости:
  Use the command to install dependencies "pip install -r requirements.txt" or 
 "pip3 install -r requirements.txt"
