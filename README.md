@@ -1,12 +1,13 @@
+# task
 ответы на задания в task_answers
 
-#
+# installations
 код для задания 1 - parser_v1.py
 Перед запуском установите зависимости:
  Use the command to install dependencies "pip install -r requirements.txt" or 
 "pip3 install -r requirements.txt"
 
-#
+# system requirements
 Написано на Python 3.9,
 проверено на Win10 python 3.9, 3.10, 3.13
              KaliLinux python 3.12
