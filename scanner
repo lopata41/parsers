@@ -1,0 +1,37 @@
+import socket
+from multiprocessing import Process
+import time
+
+start = time.time()
+
+
+
+def host_check(hostname):
+    try:
+        remote_ip = socket.gethostbyname(hostname)
+    except (socket.error, socket.gaierror) as e:
+        print('Enter the valid address!', 'Error: ', e)
+    else:
+        return remote_ip
+
+def port_scan(hostname, port_num):
+    s.settimeout(1)
+    try:
+        s.connect((hostname, port_num))
+        print(hostname, 'Port:', port_num, 'is open')
+    except socket.error:
+        pass
+    finally:
+        s.close()
+
+
+if __name__ == '__main__':
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    ip = str(input('enter the hostname:'))
+    if host_check(ip):
+        print('start scan...')
+        for i in range(65536):
+            port = i
+            Process(target=port_scan, args=(ip, port)).start()
+        print(f'Completed in: {(time.time() - start):.3f} sec.')
+        print('Scan completed')
