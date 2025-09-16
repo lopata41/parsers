@@ -1,1 +1,29 @@
-wya
+import socket
+from multiprocessing import Pool
+from netaddr import IPRange
+
+
+
+def port_scan(hostname):
+    hostname = str(hostname)
+    for port in ports:
+        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        s.settimeout(1)
+        try:
+            s.connect((hostname, port))
+            print(hostname, 'Port:', port, 'is open')
+        except socket.error as e:
+            pass
+        finally:
+            s.close()
+
+
+if __name__ == '__main__':
+    ipStart, ipEnd = input('Enter IP-IP: ').split('-')
+    iprange = IPRange(ipStart, ipEnd)
+    ports = [43, 80, 109, 110, 115, 118, 119, 143, 194, 220, 443, 540, 585, 591, 1112, 1433, 1443,
+             3128, 3197, 3306, 3899, 4224, 4444, 5000, 5432, 6379, 8000, 8080, 10000]
+    print('start scan...')
+    with Pool(len(iprange)) as p:
+        p.map(port_scan, iprange)
+    print('Scan completed')
