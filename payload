@@ -31,10 +31,7 @@ def data_send_to_remotehost():
         print(response.text)
     except Exception:
         sys.exit()
-    # with open('C:/Users/msmandrykin/Desktop/cases/Cyber_Training_Q4_25/test.txt', 'r', encoding='utf-8') as file:
-    #     file = {'file_field': ('local_file.txt', file, 'text/plain')}
-    #     response = requests.post(url, files=file, verify=False)
-    #     print(response.text)
+
 
 
 
